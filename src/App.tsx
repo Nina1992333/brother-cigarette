@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { AdminPanel } from './components/AdminPanel';
 import emailjs from '@emailjs/browser';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./components/Home";
+import AdminProducts from "./components/AdminProducts";
+import AdminAdd from "./components/AdminAdd";
 
 // 簡單的繁簡對照表
 const simplifiedToTraditional: { [key: string]: string } = {
@@ -107,11 +111,11 @@ function App() {
 
     const products = JSON.parse(localStorage.getItem('products') || '[]');
     const searchTerm = keyword.toLowerCase()
-      .replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
+      .replace(/[\uff01-\uff5e]/g, (ch: string) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
 
     const matchedProducts = products.filter((product: any) => {
       const productName = product.name.toLowerCase()
-        .replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
+        .replace(/[\uff01-\uff5e]/g, (ch: string) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
       return searchTerm.split('').some(char => productName.includes(char));
     });
 
@@ -274,17 +278,19 @@ function App() {
 
   // 定義芭比粉紅色系主題
   const theme = {
-    primary: '#FF69B4', // 經典芭比粉
-    secondary: '#FFB6C1', // 淺粉紅
-    accent: '#FFC0CB', // 粉紅色
-    light: '#FFF0F5', // 極淺粉紅
-    text: '#4A4A4A', // 深灰色文字
-    textLight: '#757575', // 淺灰色文字
-    danger: '#FF69B4', // 深粉紅
-    success: '#FF8FAB', // 中粉紅
-    background: '#FFF5F7', // 淺粉背景
+    primary: '#FF69B4',
+    secondary: '#FFB6C1',
+    accent: '#FFC0CB',
+    light: '#FFF0F5',
+    text: '#4A4A4A',
+    textLight: '#757575',
+    danger: '#FF69B4',
+    success: '#FF8FAB',
+    background: '#FFF5F7',
     white: '#FFFFFF',
-    border: '#FFD1DC' // 邊框粉紅
+    border: '#FFD1DC',
+    gradient: 'linear-gradient(90deg, #FF69B4 0%, #FFB6C1 100%)',
+    shadowColor: 'rgba(255, 105, 180, 0.2)'
   };
 
   // 更新按鈕懸停效果
@@ -361,10 +367,7 @@ function App() {
               borderRadius: '8px',
               border: 'none',
               cursor: 'pointer',
-              transition: 'all 0.2s',
-              ':hover': {
-                backgroundColor: theme.secondary
-              }
+              transition: 'all 0.2s'
             }}
           >
             確認訂單
@@ -415,10 +418,7 @@ function App() {
                         borderRadius: '4px',
                         border: 'none',
                         cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        ':hover': {
-                          backgroundColor: '#FF8080'
-                        }
+                        transition: 'all 0.2s'
                       }}
                     >
                       刪除
@@ -438,10 +438,7 @@ function App() {
                         borderRadius: '4px',
                         cursor: 'pointer',
                         color: theme.text,
-                        transition: 'all 0.2s',
-                        ':hover': {
-                          backgroundColor: theme.light
-                        }
+                        transition: 'all 0.2s'
                       }}
                     >
                       -
@@ -457,10 +454,7 @@ function App() {
                         border: `1px solid ${theme.accent}`,
                         borderRadius: '4px',
                         color: theme.text,
-                        backgroundColor: theme.white,
-                        '::placeholder': {
-                          color: theme.textLight
-                        }
+                        backgroundColor: theme.white
                       }}
                       min="1"
                     />
@@ -473,10 +467,7 @@ function App() {
                         borderRadius: '4px',
                         cursor: 'pointer',
                         color: theme.text,
-                        transition: 'all 0.2s',
-                        ':hover': {
-                          backgroundColor: theme.light
-                        }
+                        transition: 'all 0.2s'
                       }}
                     >
                       +
@@ -596,709 +587,703 @@ function App() {
   };
 
   return (
-    <div style={{ 
-      width: '100vw', 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      backgroundColor: theme.background,
-      padding: '20px',
-      backgroundImage: 'linear-gradient(45deg, #FFF5F7 25%, #FFF8FA 25%, #FFF8FA 50%, #FFF5F7 50%, #FFF5F7 75%, #FFF8FA 75%, #FFF8FA 100%)',
-      backgroundSize: '40px 40px'
-    }}>
-      <div style={{
-        width: '500px',
-        padding: '40px',
-        backgroundColor: theme.white,
-        borderRadius: '20px',
-        boxShadow: '0 8px 32px rgba(255, 105, 180, 0.1)',
-        textAlign: 'center'
-      }}>
-        {step === "welcome" && (
-          <div>
-            <h2 style={{ 
-              fontSize: '28px', 
-              fontWeight: 'bold',
-              marginBottom: '24px',
-              color: theme.text,
-              textShadow: '2px 2px 4px rgba(255, 105, 180, 0.1)'
-            }}>請選擇您的所在地</h2>
-            
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '16px',
-              marginBottom: '24px'
-            }}>
-              {Object.entries(regions).map(([name, info]) => (
-                <button
-                  key={name}
-                  onClick={() => {
-                    setRegion(name);
-                    setStep("preferences");
-                  }}
-                  style={{
-                    padding: '20px',
-                    backgroundColor: theme.white,
-                    border: `2px solid ${theme.border}`,
-                    borderRadius: '15px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                    transition: 'all 0.3s ease',
-                    ':hover': {
-                      backgroundColor: theme.light,
-                      transform: 'translateY(-3px)',
-                      boxShadow: '0 6px 16px rgba(255, 105, 180, 0.15)'
-                    }
-                  }}
-                >
-                  <span style={{ 
-                    fontWeight: 'bold',
-                    color: theme.text,
-                    fontSize: '16px'
-                  }}>{name}</span>
-                  <span style={{ 
-                    fontSize: '14px',
-                    color: theme.textLight
-                  }}>
-                    運費: ${info.fee[0]}-${info.fee[1]}
-                  </span>
-                  <span style={{ 
-                    fontSize: '14px',
-                    color: theme.primary,
-                    fontWeight: '500'
-                  }}>
-                    滿${info.freeShipping}免運費
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <p style={{ 
-              fontSize: '14px',
-              color: theme.textLight,
-              textAlign: 'center'
-            }}>
-              * 運費會根據訂單重量和距離在指定範圍內浮動
-            </p>
-          </div>
-        )}
-
-        {step === "preferences" && orderStep === 'shopping' && (
-          <div>
-            <div style={{
+              width: '100vw',
+              minHeight: '100vh',
               display: 'flex',
-              justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '24px'
+              justifyContent: 'center',
+              backgroundColor: theme.background,
+              padding: '20px',
+              backgroundImage: 'linear-gradient(45deg, #FFF5F7 25%, #FFF8FA 25%, #FFF8FA 50%, #FFF5F7 50%, #FFF5F7 75%, #FFF8FA 75%, #FFF8FA 100%)',
+              backgroundSize: '40px 40px'
             }}>
-              <button
-                onClick={() => setStep("welcome")}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: theme.white,
-                  color: theme.text,
-                  borderRadius: '8px',
-                  border: `1px solid ${theme.accent}`,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  ':hover': {
-                    backgroundColor: theme.light
-                  }
-                }}
-              >
-                ← 返回
-              </button>
-              <h2 style={{ 
-                fontSize: '24px', 
-                fontWeight: 'bold',
-                color: theme.text
-              }}>選擇偏好</h2>
-              <div style={{ width: '70px' }}></div>
-            </div>
-
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                marginBottom: '16px',
-                textAlign: 'left',
-                color: theme.text
-              }}>搜尋商品</h3>
               <div style={{
-                display: 'flex',
-                gap: '8px',
-                marginBottom: '16px'
-              }}>
-                <input
-                  type="text"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch();
-                    }
-                  }}
-                  placeholder="輸入商品名稱"
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: `1px solid ${theme.accent}`,
-                    fontSize: '16px',
-                    color: theme.text,
-                    backgroundColor: theme.white,
-                    '::placeholder': {
-                      color: theme.textLight
-                    }
-                  }}
-                />
-                <button 
-                  onClick={handleSearch}
-                  style={{
-                    padding: '12px 24px',
-                    backgroundColor: theme.primary,
-                    color: theme.text,
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    fontWeight: '500',
-                    ':hover': buttonHoverStyle
-                  }}
-                >
-                  搜尋
-                </button>
-              </div>
-            </div>
-            
-            {searchResults.length > 0 && (
-              <div style={{
-                marginTop: '16px',
-                padding: '16px',
+                width: '500px',
+                padding: '40px',
                 backgroundColor: theme.white,
-                borderRadius: '8px'
+                borderRadius: '20px',
+                boxShadow: '0 8px 32px rgba(255, 105, 180, 0.1)',
+                textAlign: 'center'
               }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '16px'
-                }}>
-                  <h4 style={{
-                    fontSize: '16px',
-                    margin: 0,
-                    color: theme.text
-                  }}>搜索結果：</h4>
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={selectedItems.size === 0}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: selectedItems.size === 0 ? theme.textLight : theme.primary,
+                {step === "welcome" && (
+                  <div>
+                    <h2 style={{ 
+                      fontSize: '28px', 
+                      fontWeight: 'bold',
+                      marginBottom: '24px',
                       color: theme.text,
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: selectedItems.size === 0 ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.2s',
-                      ':hover': {
-                        backgroundColor: selectedItems.size === 0 ? theme.textLight : theme.secondary
-                      }
-                    }}
-                  >
-                    加入購物車 ({selectedItems.size})
-                  </button>
-                </div>
-                {searchResults.map((product: any) => (
-                  <div key={product.id} style={{
-                    padding: '12px',
-                    backgroundColor: theme.white,
-                    marginBottom: '8px',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.has(product.name)}
-                      onChange={(e) => {
-                        const newSelected = new Set(selectedItems);
-                        if (e.target.checked) {
-                          newSelected.add(product.name);
-                        } else {
-                          newSelected.delete(product.name);
-                        }
-                        setSelectedItems(newSelected);
-                      }}
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        cursor: 'pointer'
-                      }}
-                    />
-                    {product.image && (
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
+                      textShadow: '2px 2px 4px rgba(255, 105, 180, 0.1)'
+                    }}>請選擇您的所在地</h2>
+                    
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
+                      gap: '16px',
+                      marginBottom: '24px'
+                    }}>
+                      {Object.entries(regions).map(([name, info]) => (
+                        <button
+                          key={name}
+                          onClick={() => {
+                            setRegion(name);
+                            setStep("preferences");
+                          }}
+                          style={{
+                            padding: '20px',
+                            backgroundColor: theme.white,
+                            border: `2px solid ${theme.border}`,
+                            borderRadius: '15px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          <span style={{ 
+                            fontWeight: 'bold',
+                            color: theme.text,
+                            fontSize: '16px'
+                          }}>{name}</span>
+                          <span style={{ 
+                            fontSize: '14px',
+                            color: theme.textLight
+                          }}>
+                            運費: ${info.fee[0]}-${info.fee[1]}
+                          </span>
+                          <span style={{ 
+                            fontSize: '14px',
+                            color: theme.primary,
+                            fontWeight: '500'
+                          }}>
+                            滿${info.freeShipping}免運費
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <p style={{ 
+                      fontSize: '14px',
+                      color: theme.textLight,
+                      textAlign: 'center'
+                    }}>
+                      * 運費會根據訂單重量和距離在指定範圍內浮動
+                    </p>
+                  </div>
+                )}
+
+                {step === "preferences" && orderStep === 'shopping' && (
+                  <div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '24px'
+                    }}>
+                      <button
+                        onClick={() => setStep("welcome")}
                         style={{
-                          width: '50px',
-                          height: '50px',
-                          objectFit: 'cover',
-                          borderRadius: '6px'
+                          padding: '8px 16px',
+                          backgroundColor: theme.white,
+                          color: theme.text,
+                          borderRadius: '8px',
+                          border: `1px solid ${theme.accent}`,
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
                         }}
-                      />
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ 
+                      >
+                        ← 返回
+                      </button>
+                      <h2 style={{ 
+                        fontSize: '24px', 
                         fontWeight: 'bold',
-                        marginBottom: '4px',
                         color: theme.text
-                      }}>{product.name}</div>
-                      <div style={{ 
-                        fontSize: '14px',
-                        color: theme.textLight
+                      }}>選擇偏好</h2>
+                      <div style={{ width: '70px' }}></div>
+                    </div>
+
+                    <div style={{ marginBottom: '32px' }}>
+                      <h3 style={{ 
+                        fontSize: '18px', 
+                        marginBottom: '16px',
+                        textAlign: 'left',
+                        color: theme.text
+                      }}>搜尋商品</h3>
+                      <div style={{
+                        display: 'flex',
+                        gap: '8px',
+                        marginBottom: '16px'
                       }}>
-                        ${product.price} | {product.type} | {product.size}
-                        {product.hasBead && ' | 爆珠'}
+                        <input
+                          type="text"
+                          value={keyword}
+                          onChange={(e) => setKeyword(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSearch();
+                            }
+                          }}
+                          placeholder="輸入商品名稱"
+                          style={{
+                            flex: 1,
+                            padding: '12px',
+                            borderRadius: '8px',
+                            border: `1px solid ${theme.accent}`,
+                            fontSize: '16px',
+                            color: theme.text,
+                            backgroundColor: theme.white
+                          }}
+                        />
+                        <button 
+                          onClick={handleSearch}
+                          style={{
+                            padding: '12px 24px',
+                            backgroundColor: theme.primary,
+                            color: theme.white,
+                            borderRadius: '8px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            fontWeight: '500'
+                          }}
+                        >
+                          搜尋
+                        </button>
                       </div>
                     </div>
+                    
+                    {searchResults.length > 0 && (
+                      <div style={{
+                        marginTop: '16px',
+                        padding: '16px',
+                        backgroundColor: theme.white,
+                        borderRadius: '8px'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '16px'
+                        }}>
+                          <h4 style={{
+                            fontSize: '16px',
+                            margin: 0,
+                            color: theme.text
+                          }}>搜索結果：</h4>
+                          <button
+                            onClick={handleAddToCart}
+                            disabled={selectedItems.size === 0}
+                            style={{
+                              padding: '8px 16px',
+                              backgroundColor: selectedItems.size === 0 ? theme.textLight : theme.primary,
+                              color: theme.text,
+                              borderRadius: '6px',
+                              border: 'none',
+                              cursor: selectedItems.size === 0 ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            加入購物車 ({selectedItems.size})
+                          </button>
+                        </div>
+                        {searchResults.map((product: any) => (
+                          <div key={product.id} style={{
+                            padding: '12px',
+                            backgroundColor: theme.white,
+                            marginBottom: '8px',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                          }}>
+                            <input
+                              type="checkbox"
+                              checked={selectedItems.has(product.name)}
+                              onChange={(e) => {
+                                const newSelected = new Set(selectedItems);
+                                if (e.target.checked) {
+                                  newSelected.add(product.name);
+                                } else {
+                                  newSelected.delete(product.name);
+                                }
+                                setSelectedItems(newSelected);
+                              }}
+                              style={{
+                                width: '20px',
+                                height: '20px',
+                                cursor: 'pointer'
+                              }}
+                            />
+                            {product.image && (
+                              <img 
+                                src={product.image} 
+                                alt={product.name}
+                                style={{
+                                  width: '50px',
+                                  height: '50px',
+                                  objectFit: 'cover',
+                                  borderRadius: '6px'
+                                }}
+                              />
+                            )}
+                            <div style={{ flex: 1 }}>
+                              <div style={{ 
+                                fontWeight: 'bold',
+                                marginBottom: '4px',
+                                color: theme.text
+                              }}>{product.name}</div>
+                              <div style={{ 
+                                fontSize: '14px',
+                                color: theme.textLight
+                              }}>
+                                ${product.price} | {product.type} | {product.size}
+                                {product.hasBead && ' | 爆珠'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div style={{ marginBottom: '32px' }}>
+                      <h3 style={{ 
+                        fontSize: '18px', 
+                        marginBottom: '16px',
+                        textAlign: 'left',
+                        color: theme.text
+                      }}>類型</h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        gap: '8px'
+                      }}>
+                        <PreferenceButton category="types" value="國煙" color="#3B82F6" />
+                        <PreferenceButton category="types" value="日煙" color="#22C55E" />
+                        <PreferenceButton category="types" value="韓煙" color="#F59E0B" />
+                        <PreferenceButton category="types" value="電子煙" color="#8B5CF6" />
+                        <PreferenceButton category="types" value="本地煙" color="#EC4899" />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '32px' }}>
+                      <h3 style={{ 
+                        fontSize: '18px', 
+                        marginBottom: '16px',
+                        textAlign: 'left',
+                        color: theme.text
+                      }}>尺寸</h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '8px'
+                      }}>
+                        <PreferenceButton category="sizes" value="粗支" color="#3B82F6" />
+                        <PreferenceButton category="sizes" value="中支" color="#22C55E" />
+                        <PreferenceButton category="sizes" value="細支" color="#F59E0B" />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '32px' }}>
+                      <h3 style={{ 
+                        fontSize: '18px', 
+                        marginBottom: '16px',
+                        textAlign: 'left',
+                        color: theme.text
+                      }}>預算</h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '8px'
+                      }}>
+                        <PreferenceButton category="budget" value="便宜" color="#3B82F6" />
+                        <PreferenceButton category="budget" value="中等" color="#22C55E" />
+                        <PreferenceButton category="budget" value="貴" color="#F59E0B" />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '32px' }}>
+                      <h3 style={{ 
+                        fontSize: '18px', 
+                        marginBottom: '16px',
+                        textAlign: 'left',
+                        color: theme.text
+                      }}>爆珠</h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        gap: '8px'
+                      }}>
+                        <PreferenceButton category="bead" value="要" color="#3B82F6" />
+                        <PreferenceButton category="bead" value="不要" color="#22C55E" />
+                      </div>
+                    </div>
+
+                    <CartSection />
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                marginBottom: '16px',
-                textAlign: 'left',
-                color: theme.text
-              }}>類型</h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '8px'
-              }}>
-                <PreferenceButton category="types" value="國煙" color="#3B82F6" />
-                <PreferenceButton category="types" value="日煙" color="#22C55E" />
-                <PreferenceButton category="types" value="韓煙" color="#F59E0B" />
-                <PreferenceButton category="types" value="電子煙" color="#8B5CF6" />
-                <PreferenceButton category="types" value="本地煙" color="#EC4899" />
-              </div>
-            </div>
+                {step === "preferences" && orderStep === 'confirm' && (
+                  <div style={{
+                    padding: '24px',
+                    backgroundColor: theme.white,
+                    borderRadius: '16px',
+                    boxShadow: `0 8px 24px ${theme.shadowColor}`
+                  }}>
+                    <div style={{
+                      textAlign: 'center',
+                      marginBottom: '32px'
+                    }}>
+                      <h2 style={{
+                        fontSize: '24px',
+                        color: theme.text,
+                        marginBottom: '8px'
+                      }}>訂單確認</h2>
+                      <div style={{
+                        backgroundColor: theme.light,
+                        padding: '16px',
+                        borderRadius: '12px',
+                        marginBottom: '16px'
+                      }}>
+                        <p style={{
+                          fontSize: '18px',
+                          color: theme.text,
+                          marginBottom: '8px'
+                        }}>您的訂單編號：</p>
+                        <p style={{
+                          fontSize: '28px',
+                          fontWeight: 'bold',
+                          color: theme.primary,
+                          marginBottom: '8px'
+                        }}>{orderSummary?.orderNumber}</p>
+                        <p style={{
+                          fontSize: '14px',
+                          color: theme.textLight
+                        }}>請保存此編號以便日後查詢</p>
+                      </div>
+                      <p style={{
+                        fontSize: '14px',
+                        color: theme.textLight
+                      }}>訂單時間：{orderSummary?.date}</p>
+                    </div>
 
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                marginBottom: '16px',
-                textAlign: 'left',
-                color: theme.text
-              }}>尺寸</h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '8px'
-              }}>
-                <PreferenceButton category="sizes" value="粗支" color="#3B82F6" />
-                <PreferenceButton category="sizes" value="中支" color="#22C55E" />
-                <PreferenceButton category="sizes" value="細支" color="#F59E0B" />
-              </div>
-            </div>
+                    <div style={{
+                      marginBottom: '24px'
+                    }}>
+                      <h3 style={{
+                        fontSize: '18px',
+                        color: theme.text,
+                        marginBottom: '16px'
+                      }}>訂單明細</h3>
+                      {orderSummary?.items.map((item, index) => (
+                        <div key={index} style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '12px',
+                          borderBottom: `1px solid ${theme.border}`,
+                          color: theme.text
+                        }}>
+                          <div>
+                            <span style={{marginRight: '8px'}}>{item.name}</span>
+                            <span style={{color: theme.textLight}}>x{item.quantity}</span>
+                          </div>
+                          <span>${item.price * item.quantity}</span>
+                        </div>
+                      ))}
+                    </div>
 
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                marginBottom: '16px',
-                textAlign: 'left',
-                color: theme.text
-              }}>預算</h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '8px'
-              }}>
-                <PreferenceButton category="budget" value="便宜" color="#3B82F6" />
-                <PreferenceButton category="budget" value="中等" color="#22C55E" />
-                <PreferenceButton category="budget" value="貴" color="#F59E0B" />
-              </div>
-            </div>
+                    <div style={{
+                      backgroundColor: theme.light,
+                      padding: '16px',
+                      borderRadius: '12px',
+                      marginBottom: '24px'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                        color: theme.text
+                      }}>
+                        <span>小計</span>
+                        <span>${orderSummary?.subtotal}</span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: '8px',
+                        color: theme.text
+                      }}>
+                        <span>運費</span>
+                        <span>${orderSummary?.shipping}</span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginTop: '12px',
+                        paddingTop: '12px',
+                        borderTop: `1px solid ${theme.border}`,
+                        fontWeight: 'bold',
+                        fontSize: '18px',
+                        color: theme.primary
+                      }}>
+                        <span>總計</span>
+                        <span>${orderSummary?.total}</span>
+                      </div>
+                    </div>
 
-            <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ 
-                fontSize: '18px', 
-                marginBottom: '16px',
-                textAlign: 'left',
-                color: theme.text
-              }}>爆珠</h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '8px'
-              }}>
-                <PreferenceButton category="bead" value="要" color="#3B82F6" />
-                <PreferenceButton category="bead" value="不要" color="#22C55E" />
-              </div>
-            </div>
+                    <div style={{
+                      backgroundColor: theme.light,
+                      padding: '16px',
+                      borderRadius: '12px',
+                      marginBottom: '24px'
+                    }}>
+                      <h3 style={{
+                        fontSize: '16px',
+                        color: theme.text,
+                        marginBottom: '8px'
+                      }}>付款方式</h3>
+                      <p style={{color: theme.text}}>{paymentMethod}</p>
+                      {paymentMethod === 'alipay' && (
+                        <p style={{color: theme.textLight, fontSize: '14px'}}>
+                          請在支付寶備註欄填寫訂單編號
+                        </p>
+                      )}
+                    </div>
 
-            <CartSection />
-          </div>
-        )}
-
-        {step === "preferences" && orderStep === 'confirm' && (
-          <div style={{
-            padding: '24px',
-            backgroundColor: theme.white,
-            borderRadius: '16px',
-            boxShadow: `0 8px 24px ${theme.shadowColor}`
-          }}>
-            <div style={{
-              textAlign: 'center',
-              marginBottom: '32px'
-            }}>
-              <h2 style={{
-                fontSize: '24px',
-                color: theme.text,
-                marginBottom: '8px'
-              }}>訂單確認</h2>
-              <div style={{
-                backgroundColor: theme.light,
-                padding: '16px',
-                borderRadius: '12px',
-                marginBottom: '16px'
-              }}>
-                <p style={{
-                  fontSize: '18px',
-                  color: theme.text,
-                  marginBottom: '8px'
-                }}>您的訂單編號：</p>
-                <p style={{
-                  fontSize: '28px',
-                  fontWeight: 'bold',
-                  color: theme.primary,
-                  marginBottom: '8px'
-                }}>{orderSummary?.orderNumber}</p>
-                <p style={{
-                  fontSize: '14px',
-                  color: theme.textLight
-                }}>請保存此編號以便日後查詢</p>
-              </div>
-              <p style={{
-                fontSize: '14px',
-                color: theme.textLight
-              }}>訂單時間：{orderSummary?.date}</p>
-            </div>
-
-            <div style={{
-              marginBottom: '24px'
-            }}>
-              <h3 style={{
-                fontSize: '18px',
-                color: theme.text,
-                marginBottom: '16px'
-              }}>訂單明細</h3>
-              {orderSummary?.items.map((item, index) => (
-                <div key={index} style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '12px',
-                  borderBottom: `1px solid ${theme.border}`,
-                  color: theme.text
-                }}>
-                  <div>
-                    <span style={{marginRight: '8px'}}>{item.name}</span>
-                    <span style={{color: theme.textLight}}>x{item.quantity}</span>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      gap: '16px'
+                    }}>
+                      <button
+                        onClick={() => {
+                          setOrderStep('shopping');
+                          setOrderSummary(null);
+                        }}
+                        style={{
+                          padding: '12px 24px',
+                          backgroundColor: theme.white,
+                          border: `2px solid ${theme.border}`,
+                          borderRadius: '12px',
+                          color: theme.text,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        返回修改
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCart([]);
+                          setOrderStep('complete');
+                        }}
+                        style={{
+                          padding: '12px 24px',
+                          background: theme.gradient,
+                          border: 'none',
+                          borderRadius: '12px',
+                          color: theme.white,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        確認付款
+                      </button>
+                    </div>
                   </div>
-                  <span>${item.price * item.quantity}</span>
-                </div>
-              ))}
-            </div>
+                )}
 
-            <div style={{
-              backgroundColor: theme.light,
-              padding: '16px',
-              borderRadius: '12px',
-              marginBottom: '24px'
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '8px',
-                color: theme.text
-              }}>
-                <span>小計</span>
-                <span>${orderSummary?.subtotal}</span>
-              </div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '8px',
-                color: theme.text
-              }}>
-                <span>運費</span>
-                <span>${orderSummary?.shipping}</span>
-              </div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginTop: '12px',
-                paddingTop: '12px',
-                borderTop: `1px solid ${theme.border}`,
-                fontWeight: 'bold',
-                fontSize: '18px',
-                color: theme.primary
-              }}>
-                <span>總計</span>
-                <span>${orderSummary?.total}</span>
-              </div>
-            </div>
-
-            <div style={{
-              backgroundColor: theme.light,
-              padding: '16px',
-              borderRadius: '12px',
-              marginBottom: '24px'
-            }}>
-              <h3 style={{
-                fontSize: '16px',
-                color: theme.text,
-                marginBottom: '8px'
-              }}>付款方式</h3>
-              <p style={{color: theme.text}}>{paymentMethod}</p>
-              {paymentMethod === 'alipay' && (
-                <p style={{color: theme.textLight, fontSize: '14px'}}>
-                  請在支付寶備註欄填寫訂單編號
-                </p>
-              )}
-            </div>
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px'
-            }}>
-              <button
-                onClick={() => {
-                  setOrderStep('shopping');
-                  setOrderSummary(null);
-                }}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: theme.white,
-                  border: `2px solid ${theme.border}`,
-                  borderRadius: '12px',
-                  color: theme.text,
-                  cursor: 'pointer'
-                }}
-              >
-                返回修改
-              </button>
-              <button
-                onClick={() => {
-                  // 完成訂單，清空購物車
-                  setCart([]);
-                  setOrderStep('complete');
-                }}
-                style={{
-                  padding: '12px 24px',
-                  background: theme.gradient,
-                  border: 'none',
-                  borderRadius: '12px',
-                  color: theme.white,
-                  cursor: 'pointer'
-                }}
-              >
-                確認付款
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === "preferences" && orderStep === 'complete' && (
-          <div>
-            <h2 style={{ 
-              fontSize: '24px', 
-              fontWeight: 'bold',
-              marginBottom: '24px',
-              color: theme.text
-            }}>訂單已送出</h2>
-            
-            <div style={{
-              backgroundColor: theme.white,
-              padding: '20px',
-              borderRadius: '8px',
-              marginBottom: '24px',
-              textAlign: 'center'
-            }}>
-              <p style={{ 
-                fontSize: '18px',
-                marginBottom: '12px',
-                color: theme.text
-              }}>您的訂單編號：</p>
-              <p style={{ 
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: theme.primary,
-                marginBottom: '24px'
-              }}>{orderNumber}</p>
-              <p style={{
-                color: theme.textLight,
-                fontSize: '14px'
-              }}>請保存此編號以便日後查詢</p>
-            </div>
-
-            <button
-              onClick={handleStartNewOrder}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: theme.primary,
-                color: theme.text,
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-                width: '100%'
-              }}
-            >
-              開始新訂單
-            </button>
-          </div>
-        )}
-
-        {orderStep === 'payment' && (
-          <div style={{
-            padding: '24px',
-            backgroundColor: theme.white,
-            borderRadius: '16px',
-            boxShadow: `0 8px 24px ${theme.shadowColor}`
-          }}>
-            <h2 style={{
-              fontSize: '24px',
-              color: theme.text,
-              marginBottom: '24px',
-              textAlign: 'center'
-            }}>選擇付款方式</h2>
-
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              marginBottom: '24px'
-            }}>
-              {Object.entries(paymentOptions).map(([key, value]) => (
-                <label
-                  key={key}
-                  style={{
-                    display: key === 'cash' && region !== '多倫多' ? 'none' : 'flex',
-                    padding: '16px',
-                    backgroundColor: paymentMethod === key ? theme.light : theme.white,
-                    border: `2px solid ${paymentMethod === key ? theme.primary : theme.border}`,
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="payment"
-                    value={key}
-                    checked={paymentMethod === key}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    style={{ marginRight: '12px' }}
-                  />
+                {step === "preferences" && orderStep === 'complete' && (
                   <div>
-                    <div style={{ 
+                    <h2 style={{ 
+                      fontSize: '24px', 
                       fontWeight: 'bold',
-                      color: theme.text,
-                      marginBottom: '4px'
-                    }}>{value.name}</div>
-                    <div style={{ 
-                      fontSize: '14px',
-                      color: theme.textLight
-                    }}>{value.description}</div>
-                  </div>
-                </label>
-              ))}
-            </div>
+                      marginBottom: '24px',
+                      color: theme.text
+                    }}>訂單已送出</h2>
+                    
+                    <div style={{
+                      backgroundColor: theme.white,
+                      padding: '20px',
+                      borderRadius: '8px',
+                      marginBottom: '24px',
+                      textAlign: 'center'
+                    }}>
+                      <p style={{ 
+                        fontSize: '18px',
+                        marginBottom: '12px',
+                        color: theme.text
+                      }}>您的訂單編號：</p>
+                      <p style={{ 
+                        fontSize: '24px',
+                        fontWeight: 'bold',
+                        color: theme.primary,
+                        marginBottom: '24px'
+                      }}>{orderNumber}</p>
+                      <p style={{
+                        color: theme.textLight,
+                        fontSize: '14px'
+                      }}>請保存此編號以便日後查詢</p>
+                    </div>
 
-            {paymentMethod && (
-              <div style={{
-                backgroundColor: theme.light,
-                padding: '16px',
-                borderRadius: '12px',
-                marginBottom: '24px'
-              }}>
-                <h3 style={{
-                  fontSize: '16px',
-                  color: theme.text,
-                  marginBottom: '8px'
-                }}>付款信息</h3>
-                {paymentMethod === 'alipay' && (
-                  <>
-                    <p>支付寶帳號：{paymentOptions.alipay.account}</p>
-                    <p>總金額：${(orderSummary?.total || 0) * 1.1} (含手續費)</p>
-                    <p style={{color: theme.textLight}}>請在備註填寫訂單編號：{orderSummary?.orderNumber}</p>
-                  </>
+                    <button
+                      onClick={handleStartNewOrder}
+                      style={{
+                        padding: '12px 24px',
+                        backgroundColor: theme.primary,
+                        color: theme.text,
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        width: '100%'
+                      }}
+                    >
+                      開始新訂單
+                    </button>
+                  </div>
                 )}
-                {paymentMethod === 'etransfer' && (
-                  <>
-                    <p>E-transfer 郵箱：{paymentOptions.etransfer.email}</p>
-                    <p>金額：${orderSummary?.total}</p>
-                    <p style={{color: theme.textLight}}>密碼請使用訂單編號：{orderSummary?.orderNumber}</p>
-                  </>
-                )}
-                {paymentMethod === 'cash' && (
-                  <>
-                    <p>現金支付金額：${orderSummary?.total}</p>
-                    <p style={{color: theme.textLight}}>面交時請出示訂單編號：{orderSummary?.orderNumber}</p>
-                  </>
+
+                {orderStep === 'payment' && (
+                  <div style={{
+                    padding: '24px',
+                    backgroundColor: theme.white,
+                    borderRadius: '16px',
+                    boxShadow: `0 8px 24px ${theme.shadowColor}`
+                  }}>
+                    <h2 style={{
+                      fontSize: '24px',
+                      color: theme.text,
+                      marginBottom: '24px',
+                      textAlign: 'center'
+                    }}>選擇付款方式</h2>
+
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '16px',
+                      marginBottom: '24px'
+                    }}>
+                      {Object.entries(paymentOptions).map(([key, value]) => (
+                        <label
+                          key={key}
+                          style={{
+                            display: key === 'cash' && region !== '多倫多' ? 'none' : 'flex',
+                            padding: '16px',
+                            backgroundColor: paymentMethod === key ? theme.light : theme.white,
+                            border: `2px solid ${paymentMethod === key ? theme.primary : theme.border}`,
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          <input
+                            type="radio"
+                            name="payment"
+                            value={key}
+                            checked={paymentMethod === key}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            style={{ marginRight: '12px' }}
+                          />
+                          <div>
+                            <div style={{ 
+                              fontWeight: 'bold',
+                              color: theme.text,
+                              marginBottom: '4px'
+                            }}>{value.name}</div>
+                            <div style={{ 
+                              fontSize: '14px',
+                              color: theme.textLight
+                            }}>{value.description}</div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+
+                    {paymentMethod && (
+                      <div style={{
+                        backgroundColor: theme.light,
+                        padding: '16px',
+                        borderRadius: '12px',
+                        marginBottom: '24px'
+                      }}>
+                        <h3 style={{
+                          fontSize: '16px',
+                          color: theme.text,
+                          marginBottom: '8px'
+                        }}>付款信息</h3>
+                        {paymentMethod === 'alipay' && (
+                          <>
+                            <p>支付寶帳號：{paymentOptions.alipay.account}</p>
+                            <p>總金額：${(orderSummary?.total || 0) * 1.1} (含手續費)</p>
+                            <p style={{color: theme.textLight}}>請在備註填寫訂單編號：{orderSummary?.orderNumber}</p>
+                          </>
+                        )}
+                        {paymentMethod === 'etransfer' && (
+                          <>
+                            <p>E-transfer 郵箱：{paymentOptions.etransfer.email}</p>
+                            <p>金額：${orderSummary?.total}</p>
+                            <p style={{color: theme.textLight}}>密碼請使用訂單編號：{orderSummary?.orderNumber}</p>
+                          </>
+                        )}
+                        {paymentMethod === 'cash' && (
+                          <>
+                            <p>現金支付金額：${orderSummary?.total}</p>
+                            <p style={{color: theme.textLight}}>面交時請出示訂單編號：{orderSummary?.orderNumber}</p>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      gap: '16px'
+                    }}>
+                      <button
+                        onClick={() => setOrderStep('confirm')}
+                        style={{
+                          padding: '12px 24px',
+                          backgroundColor: theme.white,
+                          border: `2px solid ${theme.border}`,
+                          borderRadius: '12px',
+                          color: theme.text,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        返回
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (paymentMethod) {
+                            await sendOrderEmail();
+                            setOrderStep('complete');
+                          }
+                        }}
+                        disabled={!paymentMethod}
+                        style={{
+                          padding: '12px 24px',
+                          background: theme.gradient,
+                          border: 'none',
+                          borderRadius: '12px',
+                          color: theme.white,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        確認付款方式
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
-            )}
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px'
-            }}>
-              <button
-                onClick={() => setOrderStep('confirm')}
-                style={{
-                  padding: '12px 24px',
-                  backgroundColor: theme.white,
-                  border: `2px solid ${theme.border}`,
-                  borderRadius: '12px',
-                  color: theme.text,
-                  cursor: 'pointer'
-                }}
-              >
-                返回
-              </button>
-              <button
-                onClick={async () => {
-                  if (paymentMethod) {
-                    await sendOrderEmail();
-                    setOrderStep('complete');
-                  }
-                }}
-                disabled={!paymentMethod}
-                style={{
-                  padding: '12px 24px',
-                  background: paymentMethod ? theme.gradient : theme.light,
-                  border: 'none',
-                  borderRadius: '12px',
-                  color: paymentMethod ? theme.white : theme.textLight,
-                  cursor: paymentMethod ? 'pointer' : 'not-allowed'
-                }}
-              >
-                確認付款方式
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+            }
+          />
+        <Route path="/admin/products" element={<AdminProducts />} />
+        <Route path="/admin/add" element={<AdminAdd />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
