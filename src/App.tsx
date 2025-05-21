@@ -1278,8 +1278,9 @@ function App() {
                   </div>
                 )}
               </div>
-            }
-          />
+            </div>
+          }
+        />
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/add" element={<AdminAdd />} />
       </Routes>
